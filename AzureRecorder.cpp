@@ -14,6 +14,7 @@ Recorder4Azure::Recorder4Azure()
 	height = k4aInterface->calibration.depth_camera_calibration.resolution_height;
 	depth_compress_buf_size = width * height * sizeof(int16_t) * 4;
 	depth_compress_buf = (uint8_t*)malloc(depth_compress_buf_size);
+	encodedImage = 0;
 }
 
 
@@ -21,11 +22,10 @@ Recorder4Azure::~Recorder4Azure()
 {
 	free(depth_compress_buf);
 
-	/*if (encodedImage != 0)
+	if (encodedImage != 0)
 	{
-		cv::cvReleaseMat(&encodedImage);
-	}*/
-
+		cvReleaseMat(&encodedImage);
+	}
 	delete k4aInterface;
 }
 
@@ -33,23 +33,18 @@ void Recorder4Azure::encodeJpeg(cv::Vec<unsigned char, 4> * rgb_data)
 {
 	cv::Mat4b rgbA(height, width, rgb_data, width * 4);
 	cv::Mat3b rgb;
-	cv::cvtColor(rgbA, rgb, cv::COLOR_BGRA2BGR);
-	
-	std::vector<int> params;
-	params.push_back(cv::IMWRITE_JPEG_QUALITY);
-	params.push_back(90);
+	cv::cvtColor(rgbA, rgb, cv::COLOR_BGRA2RGB);
 
-	if (!encodedImage.empty())
+	IplImage img = cvIplImage(rgb);
+
+	int jpeg_params[] = { CV_IMWRITE_JPEG_QUALITY, 90, 0 };
+
+	if (encodedImage != 0)
 	{
-		encodedImage.release();
+		cvReleaseMat(&encodedImage);
 	}
 
-	if (!buff.empty())
-	{
-		buff.clear();
-	}
-
-	cv::imencode(".jpg", rgb, buff, params);
+	encodedImage = cvEncodeImage(".jpg", &img, jpeg_params);
 }
 
 void Recorder4Azure::startWriting()
@@ -144,13 +139,12 @@ void Recorder4Azure::loggingThread()
 
 			threads.join_all();
 
-			//depthSize = width * height * sizeof(short);
-			rgbSize = width;
+			rgbSize = encodedImage->width;
 			std::cout << "depthSize: " << depthSize << std::endl;
 			std::cout << "rgbSize: " << rgbSize << std::endl;
 			
 			depthData = (unsigned char *)depth_compress_buf;
-			rgbData = (unsigned char *)buff.data();
+			rgbData = (unsigned char *)encodedImage->data.ptr;
 		}
 		else
 		{

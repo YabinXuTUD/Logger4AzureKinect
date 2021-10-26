@@ -102,8 +102,8 @@
     <TargetName>KinectAzureRecorder</TargetName>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Program Files\Azure Kinect SDK v1.4.1\sdk\include;D:\library\opencv-4.5.4\build\install\include;D:\library\opencv-4.5.4\build\install\include\opencv2;E:\zlib_lib\GnuWin32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\library\opencv-4.5.4\build\install\x86\vc15\lib;E:\boost_1_77_0\stage\lib;E:\zlib_lib\GnuWin32\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Azure Kinect SDK v1.4.1\sdk\include;D:\library\opencv-3.4.16\build\install\include;D:\library\opencv-3.4.16\build\install\include\opencv2;E:\zlib_lib\GnuWin32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\library\opencv-3.4.16\build\install\x86\vc15\lib;E:\boost_1_77_0\stage\lib;E:\zlib_lib\GnuWin32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>KinectAzureRecorder</TargetName>
@@ -132,7 +132,7 @@
   </ImportGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>GeneratedFiles\$(ConfigurationName);GeneratedFiles;.;release;/include;D:\library\opencv-4.5.4\build\install\include;D:\library\opencv-4.5.4\build\install\include\opencv2;E:\boost_1_77_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>GeneratedFiles\$(ConfigurationName);GeneratedFiles;.;release;/include;D:\library\opencv-3.4.16\build\install\include;D:\library\opencv-3.4.16\build\install\include\opencv2;E:\boost_1_77_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>release\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -152,7 +152,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>shell32.lib;k4a.lib;k4arecord.lib;opencv_calib3d454.lib;opencv_core454.lib;opencv_dnn454.lib;opencv_features2d454.lib;opencv_flann454.lib;opencv_gapi454.lib;opencv_highgui454.lib;opencv_imgcodecs454.lib;opencv_imgproc454.lib;opencv_ml454.lib;opencv_objdetect454.lib;opencv_photo454.lib;opencv_stitching454.lib;opencv_video454.lib;opencv_videoio454.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shell32.lib;k4a.lib;k4arecord.lib;opencv_calib3d3416.lib;opencv_core3416.lib;opencv_dnn3416.lib;opencv_features2d3416.lib;opencv_flann3416.lib;opencv_highgui3416.lib;opencv_imgcodecs3416.lib;opencv_imgproc3416.lib;opencv_ml3416.lib;opencv_objdetect3416.lib;opencv_photo3416.lib;opencv_shape3416.lib;opencv_stitching3416.lib;opencv_superres3416.lib;opencv_video3416.lib;opencv_videoio3416.lib;opencv_videostab3416.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\opensslx86\lib;C:\Utils\my_sql\mysql-5.6.11-win32\lib;C:\Utils\postgresqlx86\pgsql\lib;C:\Program Files\Azure Kinect SDK v1.4.1\sdk\windows-desktop\x86\release\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>

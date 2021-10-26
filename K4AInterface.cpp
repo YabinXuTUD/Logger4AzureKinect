@@ -35,6 +35,46 @@ static k4a_image_t transform_color_image(k4a_transformation_t transformation_han
 	return transformed_color_image;
 }
 
+static k4a_image_t transform_depth_image(k4a_transformation_t transformation_handle,
+	const k4a_image_t depth_image,
+	const k4a_image_t color_image
+	)
+{
+	// transform color image into depth camera geometry
+	int color_image_width_pixels = k4a_image_get_width_pixels(color_image);
+	int color_image_height_pixels = k4a_image_get_height_pixels(color_image);
+	k4a_image_t transformed_depth_image = NULL;
+	if (K4A_RESULT_SUCCEEDED != k4a_image_create(K4A_IMAGE_FORMAT_DEPTH16,
+		color_image_width_pixels,
+		color_image_height_pixels,
+		color_image_width_pixels * (int)sizeof(uint16_t),
+		&transformed_depth_image))
+	{
+		printf("Failed to create transformed depth image\n");
+		return false;
+	}
+
+	k4a_image_t point_cloud_image = NULL;
+	if (K4A_RESULT_SUCCEEDED != k4a_image_create(K4A_IMAGE_FORMAT_CUSTOM,
+		color_image_width_pixels,
+		color_image_height_pixels,
+		color_image_width_pixels * 3 * (int)sizeof(int16_t),
+		&point_cloud_image))
+	{
+		printf("Failed to create point cloud image\n");
+		return false;
+	}
+
+	if (K4A_RESULT_SUCCEEDED !=
+		k4a_transformation_depth_image_to_color_camera(transformation_handle, depth_image, transformed_depth_image))
+	{
+		printf("Failed to compute transformed depth image\n");
+		return false;
+	}
+
+	return transformed_depth_image;
+}
+
 K4AInterface::K4AInterface():
 	initSuccessful(true)
 {
@@ -87,6 +127,27 @@ K4AInterface::K4AInterface():
 		uint8_t * newImage = (uint8_t *)calloc(calibration.depth_camera_calibration.resolution_width * calibration.depth_camera_calibration.resolution_height * 4, sizeof(uint8_t));
 		frameBuffers[i] = std::pair<std::pair<uint8_t *, uint8_t *>, int64_t>(std::pair<uint8_t *, uint8_t *>(newDepth, newImage), 0);
 	}
+
+	auto calib = calibration.depth_camera_calibration;
+	using namespace std;
+	cout << "resolution width: " << calib.resolution_width << endl;
+	cout << "resolution height: " << calib.resolution_height << endl;
+	cout << "principal point x: " << calib.intrinsics.parameters.param.cx << endl;
+	cout << "principal point y: " << calib.intrinsics.parameters.param.cy << endl;
+	cout << "focal length x: " << calib.intrinsics.parameters.param.fx << endl;
+	cout << "focal length y: " << calib.intrinsics.parameters.param.fy << endl;
+	cout << "radial distortion coefficients:" << endl;
+	cout << "k1: " << calib.intrinsics.parameters.param.k1 << endl;
+	cout << "k2: " << calib.intrinsics.parameters.param.k2 << endl;
+	cout << "k3: " << calib.intrinsics.parameters.param.k3 << endl;
+	cout << "k4: " << calib.intrinsics.parameters.param.k4 << endl;
+	cout << "k5: " << calib.intrinsics.parameters.param.k5 << endl;
+	cout << "k6: " << calib.intrinsics.parameters.param.k6 << endl;
+	cout << "center of distortion in Z=1 plane, x: " << calib.intrinsics.parameters.param.codx << endl;
+	cout << "center of distortion in Z=1 plane, y: " << calib.intrinsics.parameters.param.cody << endl;
+	cout << "tangential distortion coefficient x: " << calib.intrinsics.parameters.param.p1 << endl;
+	cout << "tangential distortion coefficient y: " << calib.intrinsics.parameters.param.p2 << endl;
+	cout << "metric radius: " << calib.intrinsics.parameters.param.metric_radius << endl;
 }
 
 K4AInterface::~K4AInterface()

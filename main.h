@@ -68,8 +68,6 @@ private:
 	QCheckBox * memoryRecord;
 	QLabel * logFile;
 
-	unsigned short depthBuffer[640 * 576 * 2];
-
 	QLabel * depthLabel;
 	QLabel * imageLabel;
 

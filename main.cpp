@@ -27,19 +27,27 @@ MainWindow::MainWindow(QWidget *parent)
 	depthImage = QImage(width, height, QImage::Format_RGB888);
 	rgbImage = QImage(width, height, QImage::Format_RGBA8888);
 
-	this->setMaximumSize(width * 2 + 100, height + 300);
-	this->setMinimumSize(width * 2 + 100, height + 300);
+	this->setMaximumSize(width * 2 + 150, height + 300);
+	this->setMinimumSize(width * 2 + 150, height + 300);
 
+	int fontsize = 20;
+	int startpose = 120;
+	int interver = 80;
+	int bottonsizeWidth = 350;
+	int bottonsizeHeight = 200;
 	startStop = new QPushButton("Start/Stop Recording", this);
-	startStop->setGeometry(80, 600, 231, 151);
+	startStop->setGeometry(startpose, 600, bottonsizeWidth, bottonsizeHeight);
+	startStop->setFont(QFont("Arial", fontsize));
 	connect(startStop, SIGNAL(clicked()), this, SLOT(recordToggle()));
 
 	CapureOneFrame = new QPushButton("PerFrameCapture", this);
-	CapureOneFrame->setGeometry(360, 600, 231, 151);
+	CapureOneFrame->setGeometry(startpose + bottonsizeWidth + interver, 600, bottonsizeWidth,bottonsizeHeight);
+	CapureOneFrame->setFont(QFont("Arial", fontsize));
 	connect(CapureOneFrame, SIGNAL(clicked()), this, SLOT(oneFrameCaputre()));
 
 	startStopDevice = new QPushButton("Start/Stop Streaming", this);
-	startStopDevice->setGeometry(680, 600, 231, 151);
+	startStopDevice->setGeometry(startpose + 2 * bottonsizeWidth + 2 * interver, 600, bottonsizeWidth, bottonsizeHeight);
+	startStopDevice->setFont(QFont("Arial", fontsize));
 	connect(startStopDevice, SIGNAL(clicked()), this, SLOT(controlCameraToggle()));
 
 	//memoryRecord = new QCheckBox("Record to RAM");
@@ -47,11 +55,11 @@ MainWindow::MainWindow(QWidget *parent)
 	//memoryRecord->setGeometry(0, 800, 40, 40);
 
 	imageLabel = new QLabel(this);
-	imageLabel->setGeometry(0, 0, width, height);
+	imageLabel->setGeometry(50, 0, width, height);
 	imageLabel->setPixmap(QPixmap::fromImage(rgbImage));
 
 	depthLabel = new QLabel(this);
-	depthLabel->setGeometry(width + 50, 0, width, height);
+	depthLabel->setGeometry(width + 100, 0, width, height);
 	depthLabel->setPixmap(QPixmap::fromImage(depthImage));
 	
 	timer = new QTimer(this);
@@ -103,6 +111,8 @@ void MainWindow::timerCallback()
 
 	recorder->getK4AInterface()->captureOneFrame();
 
+	unsigned short* depthBuffer = new unsigned short[width * height * 2];
+
 	int lastDepth = recorder->getK4AInterface()->latestFrameIndex.getValue();
 
 	if (lastDepth == -1)
@@ -131,6 +141,7 @@ void MainWindow::timerCallback()
 	depthLabel->setPixmap(QPixmap::fromImage(depthImage));
 	imageLabel->setPixmap(QPixmap::fromImage(rgbImage));
 
+	delete depthBuffer;
 }
 
 void MainWindow::oneFrameCaputre()

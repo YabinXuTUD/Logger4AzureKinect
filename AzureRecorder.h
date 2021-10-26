@@ -14,8 +14,8 @@
 #include "opencv2/core.hpp"
 #include "opencv2/calib3d.hpp"
 #include <opencv2/opencv.hpp>
+#include <opencv2/imgcodecs/imgcodecs_c.h>
 #include "opencv2/imgproc/imgproc_c.h"
-//#include <opencv2/imgcodecs/imgcodecs_c.h>
 #include "opencv2/highgui/highgui.hpp"
 #include "zlib.h"
 
@@ -57,8 +57,7 @@ private:
 
 	int depth_compress_buf_size;
 	uint8_t * depth_compress_buf;
-	cv::Mat encodedImage;
-	std::vector<uchar> buff;
+	CvMat * encodedImage;
 
 	int lastWritten;
 	boost::thread * writeThread;
