@@ -154,7 +154,6 @@ void K4AInterface::captureOneFrame()
 	k4a_image_release(transformed_color_image);
 	k4a_image_release(rgb_image);
 	k4a_capture_release(capture);
-	printf("Grab a Capture!\n");
 	fflush(stdout);
 }
 

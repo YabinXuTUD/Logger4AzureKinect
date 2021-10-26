@@ -18,12 +18,15 @@
 #include <stdio.h>
 #include <cassert>
 
+#include <windows.h>
+#include <psapi.h>
+
 #include "ThreadMutexObject.h"
 
 #ifndef OS_WINDOWS
 #ifndef __APPLE__
 #include <sys/types.h>
-#include <sys/sysinfo.h>
+//#include <sys/sysinfo.h>
 #else
 #include <sys/types.h>
 #include <sys/sysctl.h>
@@ -160,24 +163,26 @@ class MemoryBuffer
 
         static long long getTotalSystemMemory()
         {
-            struct sysinfo memInfo;
+          /*  struct sysinfo memInfo;
             sysinfo(&memInfo);
 
             long long totalPhysMem = memInfo.totalram;
             totalPhysMem *= memInfo.mem_unit;
 
-            return totalPhysMem;
+            return totalPhysMem;*/
+			return 0;
         }
 
         static long long getUsedSystemMemory()
         {
-            struct sysinfo memInfo;
+           /* struct sysinfo memInfo;
             sysinfo(&memInfo);
 
             long long physMemUsed = memInfo.totalram - memInfo.freeram - memInfo.sharedram - memInfo.bufferram;
             physMemUsed *= memInfo.mem_unit;
 
-            return physMemUsed;
+            return physMemUsed;*/
+			return 0;
         }
 
         static long long getProcessMemory()

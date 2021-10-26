@@ -42,6 +42,10 @@ MainWindow::MainWindow(QWidget *parent)
 	startStopDevice->setGeometry(680, 600, 231, 151);
 	connect(startStopDevice, SIGNAL(clicked()), this, SLOT(controlCameraToggle()));
 
+	//memoryRecord = new QCheckBox("Record to RAM");
+	//memoryRecord->setChecked(false);
+	//memoryRecord->setGeometry(0, 800, 40, 40);
+
 	imageLabel = new QLabel(this);
 	imageLabel->setGeometry(0, 0, width, height);
 	imageLabel->setPixmap(QPixmap::fromImage(rgbImage));
@@ -68,15 +72,19 @@ MainWindow::~MainWindow()
 
 void MainWindow::recordToggle()
 {
-	std::cout << "start scanning" << std::endl;
+	
 	if (!recording)
 	{
-		QMessageBox::information(this, "Information", "stop recording, writing to file");
+		//start writing file;
+		std::cout << "start scanning" << std::endl;
+		recorder->startWriting();
 		recording = true;
 	}
 	else
 	{
-		QMessageBox::information(this, "Information", "start recording");
+		std::cout << "writing to file" << std::endl;
+		////stop writing file;
+		recorder->stopWriting();
 		recording = false;
 	}
 }
@@ -127,31 +135,7 @@ void MainWindow::timerCallback()
 
 void MainWindow::oneFrameCaputre()
 {
-	recorder->getK4AInterface()->captureOneFrame();
+	//save a image to hard disk;
 
-	int lastDepth = recorder->getK4AInterface()->latestFrameIndex.getValue();
 
-	if (lastDepth == -1)
-	{
-		return;
-	}
-
-	int bufferIndex = lastDepth % K4AInterface::numBuffers;
-
-	/*if (lastFrameTime == recorder->getK4AInterface()->frameBuffers[bufferIndex].second)
-	{
-		return;
-	}*/
-
-	memcpy(&depthBuffer[0], recorder->getK4AInterface()->frameBuffers[bufferIndex].first.first, width * height * 2);
-	memcpy(rgbImage.bits(), recorder->getK4AInterface()->frameBuffers[bufferIndex].first.second, width * height * 4);
-
-	cv::Mat1w depth(height, width, (unsigned short *)&depthBuffer[0]);
-	normalize(depth, tmp, 0, 255, cv::NORM_MINMAX, 0);
-
-	cv::Mat3b depthImg(height, width, (cv::Vec<unsigned char, 3> *)depthImage.bits());
-	cv::cvtColor(tmp, depthImg, CV_GRAY2RGB);
-
-	depthLabel->setPixmap(QPixmap::fromImage(depthImage));
-	imageLabel->setPixmap(QPixmap::fromImage(rgbImage));
 }
