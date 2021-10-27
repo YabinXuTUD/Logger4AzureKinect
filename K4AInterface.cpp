@@ -43,6 +43,8 @@ static k4a_image_t transform_depth_image(k4a_transformation_t transformation_han
 	// transform color image into depth camera geometry
 	int color_image_width_pixels = k4a_image_get_width_pixels(color_image);
 	int color_image_height_pixels = k4a_image_get_height_pixels(color_image);
+
+	//create transformed depth image
 	k4a_image_t transformed_depth_image = NULL;
 	if (K4A_RESULT_SUCCEEDED != k4a_image_create(K4A_IMAGE_FORMAT_DEPTH16,
 		color_image_width_pixels,
@@ -51,17 +53,6 @@ static k4a_image_t transform_depth_image(k4a_transformation_t transformation_han
 		&transformed_depth_image))
 	{
 		printf("Failed to create transformed depth image\n");
-		return false;
-	}
-
-	k4a_image_t point_cloud_image = NULL;
-	if (K4A_RESULT_SUCCEEDED != k4a_image_create(K4A_IMAGE_FORMAT_CUSTOM,
-		color_image_width_pixels,
-		color_image_height_pixels,
-		color_image_width_pixels * 3 * (int)sizeof(int16_t),
-		&point_cloud_image))
-	{
-		printf("Failed to create point cloud image\n");
 		return false;
 	}
 
@@ -123,12 +114,12 @@ K4AInterface::K4AInterface():
 	latestFrameIndex.assignValue(-1);
 	for (int i = 0; i < numBuffers; i++)
 	{
-		uint8_t * newDepth = (uint8_t *)calloc(calibration.depth_camera_calibration.resolution_width * calibration.depth_camera_calibration.resolution_height * 2, sizeof(uint8_t));
-		uint8_t * newImage = (uint8_t *)calloc(calibration.depth_camera_calibration.resolution_width * calibration.depth_camera_calibration.resolution_height * 4, sizeof(uint8_t));
+		uint8_t * newDepth = (uint8_t *)calloc(calibration.color_camera_calibration.resolution_width * calibration.color_camera_calibration.resolution_height * 2, sizeof(uint8_t));
+		uint8_t * newImage = (uint8_t *)calloc(calibration.color_camera_calibration.resolution_width * calibration.color_camera_calibration.resolution_height * 4, sizeof(uint8_t));
 		frameBuffers[i] = std::pair<std::pair<uint8_t *, uint8_t *>, int64_t>(std::pair<uint8_t *, uint8_t *>(newDepth, newImage), 0);
 	}
 
-	auto calib = calibration.depth_camera_calibration;
+	auto calib = calibration.color_camera_calibration;
 	using namespace std;
 	cout << "resolution width: " << calib.resolution_width << endl;
 	cout << "resolution height: " << calib.resolution_height << endl;
@@ -167,7 +158,7 @@ void K4AInterface::captureOneFrame()
 	// Get a capture
 	k4a_image_t depth_image;
 	k4a_image_t rgb_image;
-	k4a_image_t transformed_color_image;
+	k4a_image_t transformed_depth_image;
 	k4a_capture_t capture;
 
 	switch (k4a_device_get_capture(device, &capture, TIMEOUT_IN_MS))
@@ -194,7 +185,7 @@ void K4AInterface::captureOneFrame()
 		printf("Failed to get depth image from capture\n");
 	}
 
-	transformed_color_image = transform_color_image(transformation, depth_image, rgb_image);
+	transformed_depth_image = transform_depth_image(transformation, depth_image, rgb_image);
 
 	//record system time
 	boost::posix_time::ptime time = boost::posix_time::microsec_clock::local_time();
@@ -202,18 +193,18 @@ void K4AInterface::captureOneFrame()
 	lastFrameBufferTime = duration.total_microseconds();
 
 	int bufferIndex = (latestFrameIndex.getValue() + 1) % numBuffers;
-	memcpy(frameBuffers[bufferIndex].first.first, k4a_image_get_buffer(depth_image), k4a_image_get_width_pixels(depth_image) 
-			* k4a_image_get_height_pixels(depth_image) * 2);
-	memcpy(frameBuffers[bufferIndex].first.second, k4a_image_get_buffer(transformed_color_image), k4a_image_get_width_pixels(depth_image)
-		* k4a_image_get_height_pixels(depth_image) * 4);
+	memcpy(frameBuffers[bufferIndex].first.first, k4a_image_get_buffer(transformed_depth_image), k4a_image_get_width_pixels(transformed_depth_image)
+			* k4a_image_get_height_pixels(transformed_depth_image) * 2);
+	memcpy(frameBuffers[bufferIndex].first.second, k4a_image_get_buffer(rgb_image), k4a_image_get_width_pixels(rgb_image)
+		* k4a_image_get_height_pixels(rgb_image) * 4);
 	frameBuffers[bufferIndex].second = lastFrameBufferTime;
 
 	latestFrameIndex++;
 
 	//release image and capture;
 	k4a_image_release(depth_image);
-	k4a_image_release(transformed_color_image);
 	k4a_image_release(rgb_image);
+	k4a_image_release(transformed_depth_image);
 	k4a_capture_release(capture);
 	fflush(stdout);
 }

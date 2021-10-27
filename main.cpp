@@ -21,14 +21,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
 	//obtain width and height in the current configuration;
-	width = recorder->getK4AInterface()->calibration.depth_camera_calibration.resolution_width;
-	height = recorder->getK4AInterface()->calibration.depth_camera_calibration.resolution_height;
-
+	width = recorder->getK4AInterface()->calibration.color_camera_calibration.resolution_width;
+	height = recorder->getK4AInterface()->calibration.color_camera_calibration.resolution_height;
+	std::cout << "width: " << width << std::endl;
+	std::cout << "height: " << height << std::endl;
 	depthImage = QImage(width, height, QImage::Format_RGB888);
 	rgbImage = QImage(width, height, QImage::Format_RGBA8888);
 
-	this->setMaximumSize(width * 2 + 150, height + 300);
-	this->setMinimumSize(width * 2 + 150, height + 300);
+	this->setMaximumSize(640 * 2 + 150, 576 + 300);
+	this->setMinimumSize(640 * 2 + 150, 576 + 300);
 
 	int fontsize = 20;
 	int startpose = 120;
@@ -55,11 +56,11 @@ MainWindow::MainWindow(QWidget *parent)
 	//memoryRecord->setGeometry(0, 800, 40, 40);
 
 	imageLabel = new QLabel(this);
-	imageLabel->setGeometry(50, 0, width, height);
+	imageLabel->setGeometry(50, 0, 640, 576);
 	imageLabel->setPixmap(QPixmap::fromImage(rgbImage));
 
 	depthLabel = new QLabel(this);
-	depthLabel->setGeometry(width + 100, 0, width, height);
+	depthLabel->setGeometry(640 + 100, 0, 640, 576);
 	depthLabel->setPixmap(QPixmap::fromImage(depthImage));
 	
 	timer = new QTimer(this);
@@ -138,8 +139,8 @@ void MainWindow::timerCallback()
 
 	lastFrameTime = recorder->getK4AInterface()->frameBuffers[bufferIndex].second;
 
-	depthLabel->setPixmap(QPixmap::fromImage(depthImage));
-	imageLabel->setPixmap(QPixmap::fromImage(rgbImage));
+	depthLabel->setPixmap(QPixmap::fromImage(depthImage).scaled(640,576,Qt::KeepAspectRatio));
+	imageLabel->setPixmap(QPixmap::fromImage(rgbImage).scaled(640, 576, Qt::KeepAspectRatio));
 
 	delete depthBuffer;
 }

@@ -12,3 +12,4 @@ A QT application to record data streams from Azure Kinect (on Windows 10)
 Open KinectAzureRecorder.sln in Visual Studio 2017, and then build with x86 Release option, that's all
 
 # GUI
+![image](fig/GUI.png)

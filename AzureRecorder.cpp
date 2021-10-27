@@ -10,11 +10,11 @@ Recorder4Azure::Recorder4Azure()
 {
 	writing.assignValue(false);
 	k4aInterface = new K4AInterface();
-	width = k4aInterface->calibration.depth_camera_calibration.resolution_width;
-	height = k4aInterface->calibration.depth_camera_calibration.resolution_height;
+	width = k4aInterface->calibration.color_camera_calibration.resolution_width;
+	height = k4aInterface->calibration.color_camera_calibration.resolution_height;
 	depth_compress_buf_size = width * height * sizeof(int16_t) * 4;
 	depth_compress_buf = (uint8_t*)malloc(depth_compress_buf_size);
-	encodedImage = 0;
+	encodedImage = NULL;
 }
 
 
@@ -34,16 +34,13 @@ void Recorder4Azure::encodeJpeg(cv::Vec<unsigned char, 4> * rgb_data)
 	cv::Mat4b rgbA(height, width, rgb_data, width * 4);
 	cv::Mat3b rgb;
 	cv::cvtColor(rgbA, rgb, cv::COLOR_BGRA2RGB);
-
 	IplImage img = cvIplImage(rgb);
 
-	int jpeg_params[] = { CV_IMWRITE_JPEG_QUALITY, 90, 0 };
-
-	if (encodedImage != 0)
+	int jpeg_params[] = {CV_IMWRITE_JPEG_QUALITY, 90, 0};
+	if (encodedImage != NULL)
 	{
 		cvReleaseMat(&encodedImage);
 	}
-
 	encodedImage = cvEncodeImage(".jpg", &img, jpeg_params);
 }
 
