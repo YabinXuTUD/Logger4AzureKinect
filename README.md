@@ -9,7 +9,7 @@ A QT application to record data streams from Azure Kinect (on Windows 10)
 5.	Zlib (version 1.2.11, https://www.zlib.net/)
 
 # Build
-Open KinectAzureRecorder.sln in Visual Studio 2017, and then build with x86 Release option, that's all
+Open KinectAzureRecorder.sln in Visual Studio 2017, and then build with x86 Release option, that's all. Note that the depth image is transfromed to the color camera so that the depth and color image is aligned already.
 
 # GUI
 ![image](fig/GUI.png)
